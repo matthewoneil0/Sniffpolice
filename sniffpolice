@@ -1,0 +1,37 @@
+#!/bin/sh
+
+echo "\e[96m  
+   _____ _   ______________________  ____  __    ________________
+  / ___// | / /  _/ ____/ ____/ __ \/ __ \/ /   /  _/ ____/ ____/
+  \__ \/  |/ // // /_  / /_  / /_/ / / / / /    / // /   / __/
+ ___/ / /|  // // __/ / __/ / ____/ /_/ / /____/ // /___/ /___
+/____/_/ |_/___/_/   /_/   /_/    \____/_____/___/\____/_____/  "
+
+echo "Thank you for choosing sniffpolice as your networking tool 
+- MO"
+
+echo "Finding subnet... is this your subnet?[y/n]"
+echo $(ip -o -f inet addr show | awk '/scope global/ {print $4}' |grep -m1 "")
+subnet=$(ip -o -f inet addr show | awk '/scope global/ {print $4}' |grep -m1 "")
+
+valid=true
+
+while [ "$valid" = true ]
+do
+	echo -n "\033[5m:\033[0m"
+	read answer
+	
+	if [ $answer = "y" ]
+	then
+		valid=false
+	elif [ $answer = "n" ] 
+	then 
+		echo -n "Please enter your subnet:"
+		read subnet
+		valid=false
+	else
+		echo "Please choose a valid option."
+	fi
+done
+
+echo "Scanning subnet $subnet"
