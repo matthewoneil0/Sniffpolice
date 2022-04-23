@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-echo "\e[93m  
+echo "  
    _____ _   ______________________  ____  __    ________________
   / ___// | / /  _/ ____/ ____/ __ \/ __ \/ /   /  _/ ____/ ____/
   \__ \/  |/ // // /_  / /_  / /_/ / / / / /    / // /   / __/
@@ -9,7 +9,7 @@ echo "\e[93m
 
 echo "'Thank you for choosing sniffpolice as your networking tool' - M.O."
 
-echo "\e[92mFinding subnet... is this your subnet?[y/n/q]"
+echo "Finding subnet... is this your subnet?[y/n/q]"
 echo $(ip -o -f inet addr show | awk '/scope global/ {print $4}' |grep -m1 "")
 subnet=$(ip -o -f inet addr show | awk '/scope global/ {print $4}' |grep -m1 "")
 
@@ -46,4 +46,4 @@ echo $arr
 
 echo "Scanning subnet $subnet for sniffers."
 
-sudo nmap --script=sniffer-detect $subnet
+sudo nmap -q --script=sniffer-detect $subnet
