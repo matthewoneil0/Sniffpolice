@@ -11,10 +11,20 @@ echo "'Thank you for choosing sniffpolice as your networking tool' - MO"
 
 # Getting users subnet.
 echo "Is this your subnet you'd like to police?[y/n/q]"
-subnet=$(ip -o -f inet addr show | awk '/scope global/ {print $4}' |grep -m1 "")
+
+# Using ip command to retrieve network infromation then pattern matching the subnet.
+subnet=$(ip -o -f inet addr show | 
+		awk '/scope global/ {print $4}' |
+		grep -m1 "")
+
 echo $subnet
 
 valid=true
+
+# Loop to gather user input
+# y - continue with found subnet
+# n - deny found subnet and enter manually
+# q - quit program 
 
 while [ "$valid" = true ]
 do
@@ -39,17 +49,29 @@ done
 
 # Confirmed subnet. Now gathering ip addresses on the subnet.
 echo -e "\e[92mGathering host ip's on the network..."
-arr=( $(nmap $subnet | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | sort | uniq | sort) )
+
+# Use Nmap to find IP address's,
+# Use grep and regex to create array of IP addresses out of the results.
+arr=( $(nmap $subnet | 
+		grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | 
+		sort | 
+		uniq ) )
+
+# Display number of entries in array to find number of hosts.
 echo "Found ${#arr[@]} hosts on the network."
 
+# Loop through IP's in array.
 for ip in "${arr[@]}"
 do
 	echo ""
 	echo "Poking $ip for sniffing..."
+
+	# Store script result in variable to inspect.
 	result=$(sudo nmap --script=sniffer-detect "$ip")
-	#echo $result
+
+	# If script results contain "Likely in promiscuous mode", print result
 	if echo "$result" | grep -q "Likely in prom"; then
+
 		echo -e "\e[97m\e[41m\e[4m$ip is likley sniffing!\e[0m\e[92m\e[49m"
 	fi
-	#echo "grep 'Likely in prom' $result"
 done
